@@ -8,19 +8,22 @@ const mysql = require('promise-mysql');
 const app = express();
 const port = 5000;
 
-// DB_USER=root DB_PASS=root DB_NAME=multimedia_db INSTANCE_UNIX_SOCKET=/cloudsql/ivory-streamer-404709:europe-west1:multimedia node server.js
+// DB_USER=antov DB_PASS=test1234 DB_NAME=multimedia_db INSTANCE_HOST=34.78.226.117 INSTANCE_PORT=3306 node server.js
 
-const createUnixSocketPool = async config => {
+const createTcpPool = async config => {
   return mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    socketPath: process.env.INSTANCE_UNIX_SOCKET,
+    host: process.env.INSTANCE_HOST,
+    port: process.env.INSTANCE_PORT,
+    waitForConnections: true,
+    connectionLimit: 10
   });
 };
 
 const initializeServer = async () => {
-  const pool = await createUnixSocketPool();
+  const pool = await createTcpPool();
 
   pool.getConnection()
     .then((connection) => {
